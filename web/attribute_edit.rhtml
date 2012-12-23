@@ -1,0 +1,70 @@
+<ttop>
+	#set($attribute=true)
+	#set($attr=$!{pt.getAttribute($id)})
+</ttop>
+
+<bean name="breadcrumb" type="addCrumb" index="999999">
+	#if($id)属性方法编辑#else新增属性方法#end
+</bean>
+<style>
+.ace_editor_wrapper {
+    border: 1px solid #DDDDDD;
+    border-radius: 4px 4px 0 4px;
+    height: 420px;
+    margin-top: 5px;
+    position: relative;
+}
+</style>
+<script src="/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+<div class="container-fluid">
+		<div class="row-fluid">
+			<div class="span1"></div>
+			<div class="span10">
+<form class="form-horizontal ajaxform" action="/attribute!save.do" method="post" tu="/attribute.rhtml">
+<input type="hidden" name="attr.id" value="$!{id}"/>
+<input type="hidden" id="attr_content" name="attr.content" value=""/>
+<div class="control-group">
+	<label class="control-label">属性名称</label>
+	<div class="controls">
+		<input type="text" class="input-xlarge attrname" name="attr.name" require="true" dataType="English" placeholder="属性名称" msg="请输入属性名称，属性名称只能是英文字母。" value="$!{attr.name}">
+	</div>
+</div>
+<div class="control-group">
+	<label class="control-label">方法体</label>
+	<div class="controls">
+		<div id="editor" class="ace_editor_wrapper">$!{attr.content}</div>
+	</div>
+</div>
+
+<div class="form-actions" style="text-align: center;">
+	<button type="submit" class="btn btn-primary submit">保存</button>
+	<a href="template.rhtml" class="btn">取消</a>
+</div>	
+</form>
+
+</div>
+<div class="span1"></div>
+</div>
+</div>
+
+<script>
+	$(document).ready(function(){
+		
+		var editor = getAceEdit("editor", "js");
+	    
+	    $(".attrname").blur(function(e){
+	    	var o = $(this);
+	    	if(o.val()!="" && editor.getValue()=="")
+	    	{
+	    		editor.setValue("function "+o.val()+"(obj)\r\n{\r\n\treturn obj;\r\n}")
+	    	}
+	    });
+	    $(".submit").click(function(e){
+	    	$("#attr_content").val(editor.getValue());
+	    	return true;
+	    })
+	    
+	});
+</script>
+
+

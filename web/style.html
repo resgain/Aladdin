@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script type="text/javascript" src="/js/resgain.jsz"></script>
+<link rel="stylesheet" type="text/css" href="/css/resgain.csz" />
+<title>Aladdin</title>
+<style type="text/css">
+.table thead tr th {
+	text-align: center;
+}
+</style>
+</head>
+<body>
+	<div class="navbar">
+		<div class="navbar-inner">
+			<a class="brand" href="#">Aladdin</a>
+			<ul class="nav">
+				<li #if($index)class="active"#end><a href="/index.rhtml">代码生成</a></li>
+				<li #if($template)class="active"#end><a href="/template.rhtml">模版管理</a></li>
+				<li #if($attribute)class="active"#end><a href="/attribute.rhtml">属性管理</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<div class="span12">
+				<ul class="breadcrumb">
+					#foreach($crumb in $breadcrumb.breadcrumb.entrySet())
+					<li>#if($foreach.hasNext )<a href="$crumb.value.url">$crumb.value.title</a><span
+						class="divider">/</span> #else
+						<li class="active">$crumb.value.title</li> #end
+					</li> #end
+				</ul>
+			</div>
+		</div>
+		<div class="row-fluid">
+			<div class="span12">{MAIN}</div>
+		</div>
+	</div>
+</body>
+</html>

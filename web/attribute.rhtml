@@ -1,0 +1,39 @@
+<ttop>
+	#set($attribute=true)
+	#set($f="$")
+</ttop>
+
+<bean name="breadcrumb" type="creatCrumb" index="999999">
+	属性管理
+</bean>
+
+<p><a href="attribute_edit.rhtml" class="btn">新增</a></p>
+
+<div class="alert alert-info">
+	属性主要是针对Table、Column类的扩展，可以更加方便快捷的编写模板，系统对Table默认有class、prop等属性，对Column有prop、type、get、set等属性，您完全可以在这里定制自己的属性，与系统默认重名则以自定义属性方法优先。
+</div>
+
+<h4>Example...</h4>
+<pre>
+ function test(obj) { //这里的obj就是模板里的table或column，定义之后在模板里就可以这样写${f}{table:test}，输出就是这个函数的返回值。
+   return obj.code.toLowerCase();	
+ }
+</pre>
+<div class="container-fluid">
+#foreach($attr in $pt.getAttributeList())
+	<div class="row-fluid">
+		<div class="span2">
+<div style="padding-top: 10px; text-align: right;">
+<a href="/attribute_edit.rhtml?id=$attr.id" class="btn btn-primary">修改</a>
+<a href="/attribute!del.do?id=$attr.id" class="btn btn-danger ajax" confirm="您确认删除吗?">删除</a>
+</div>		
+		</div>
+			
+		<div class="span10">
+<pre style="padding: 2px;">
+$!{attr.content}
+</pre>		
+		</div>
+	</div>
+#end	
+</div>

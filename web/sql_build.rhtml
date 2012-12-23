@@ -1,0 +1,195 @@
+<ttop>
+	#set($index=true)
+	#set($table=$pt.getProject($projId).project.getTable($tableId))
+</ttop>
+
+<bean name="breadcrumb" type="addCrumb" index="999999">
+	#set($table=$pt.getProject($projId).project.getTable($tableId))
+	$!{table.code}-$op
+</bean>
+
+<style>
+select, input[type="text"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+    margin-bottom: 0px;
+    padding: 0px 0px;
+}
+#editor { 
+    position: absolute;
+    top: 120px;
+    right: 20px;
+    bottom: 0px;
+    left: 20px;
+}
+.modal {
+	width:640px;
+	border:none;
+}
+select, input[type="file"] {
+    height: 20px;
+	width: 75px;
+}
+</style>
+
+<script type="text/javascript" src="/js/drag.js"></script>
+<script src="/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+
+<div id="editor"></div>
+
+<div id="table_info" class="modal hide">
+		<div id="table_info1" class="groupItem" style="width:640px; background: white;  margin-bottom: 0px;">
+			<div class="itemHeader" id="table_title">
+				<h3>$!{table.code}($!{table.name})</h3>
+			</div>
+			<div class="itemContent" style="padding: 12px;#if($$table.columns.size()>=10)height: 436px;#end overflow-y:scroll;">
+				<table class="table table-bordered table-hover">	
+				<thead>
+					<tr>
+						#if("$op"=="select")
+						<th width="16"><input type="checkbox" class="selectall" sub="field"></th>
+						#end
+						<th width="132">Code</th>
+						<th width="110">Name</th>
+						<th width="80">类型</th>
+						#if("$op"=="select" || "$op"=="delete")
+						<th width="80">关系</th>	
+						#end
+						<th>值</th>
+					</tr>
+				</thead>
+				<tbody>
+				#foreach($column in $table.columns)
+					<tr>
+					#if("$op"=="select")
+						<td><input type="checkbox" value="$!{column.code}" class="field"/></td>
+					#end
+						<td>$!{column.code}</td>
+						<td>$!{column.name}</td>
+						<td>${column.type}</td>
+						#if("$op"=="select" || "$op"=="delete")
+						<td>
+							<select id="$!{column.code}_" class="op">
+								<option value="">选择关系</option>
+								<option value="1" r="$!{column.code} is null ">为空</option>
+								<option value="2" r="$!{column.code} is not null ">不为空</option>
+								<option value="3" r="$!{column.code} = ">等于</option>
+								<option value="4" r="$!{column.code} != ">不等于</option>
+								<option value="5" r="$!{column.code} > ">大于</option>
+								<option value="6" r="$!{column.code} >= ">大于等于</option>
+								<option value="7" r="$!{column.code} < ">小于</option>
+								<option value="8" r="$!{column.code} <= ">小于等于</option>
+								<option value="10" r="$!{column.code} in ">包含</option>
+								<option value="11" r="$!{column.code} not in ">不包含</option>
+								#if($pt.isStr($column.type))
+								<option value="20" r="$!{column.code} like ">字符包含</option>
+								<option value="21" r="$!{column.code} not like ">字符不包含</option>
+								#end								
+							</select>
+						</td>	
+						#end
+						<td><input type="text" style="width: 95%;" id="$!{column.code}_val" field="$!{column.code}" class="fieldValue" #if("$op"=="select" || "$op"=="delete") disabled #end #if($pt.isStr($column.type)) fix_="'" #else fix_="" #end/></td>
+					</tr>
+				#end
+				</tbody>
+				</table>
+			</div>
+			<div class="modal-footer">
+				<table width="100%">
+					<tr>
+						<td style="text-align: left;">
+							如果此窗口已关闭，可以按Ctrl+m键重新打开这个窗口 
+						</td>
+						<td>
+							<a href="#" class="btn btn-primary" data-dismiss="modal">关闭</a>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+</div>
+
+<script>
+	$(document).ready(function(){
+		
+		var editor = getAceEdit("editor", "sql");
+	    editor.commands.addCommand({
+	        name: 'showTableInfo',
+	        bindKey: {win: 'Ctrl-M',  mac: 'Command-M'},
+	        exec: function(editor) {
+	        	$('#table_info').modal("show")
+	        }
+	    });		
+	    
+	    $('#table_info').modal("show");
+		$("#table_info1").easydrag();
+		$("#table_info1").setHandler('table_title');
+		
+		function getValue(fieldId){
+			var fo = $("#"+fieldId);
+			if(fo.attr("disabled"))
+				return "";
+			return fo.attr("fix_")+fo.val()+fo.attr("fix_");
+		}
+		
+		#if("$op"=="select" || "$op"=="delete")
+	    $(".op").change(function(){
+	    	var o = $(this);
+	    	$("#"+o.attr("id")+"val").attr("disabled", o.val()<3);
+	    });
+		#end		
+	    
+	    var sqlBuild = function(){ //FIXME 下面生成SQL语句的方式有待换个更好的方式，另外有不少小BUG，临时凑合用
+			#if("$op"=="select" || "$op"=="delete")
+	    	var where = $.map($(".op"), function(o1){
+	    		var o = $(o1);
+	    		if(o.val()!="")
+	    			if(o.val()=="10" || o.val()=="11")
+	    				return o.find("option:selected").attr("r")+"("+getValue(o.attr("id")+"val")+")";
+	    			else
+	    				return o.find("option:selected").attr("r")+getValue(o.attr("id")+"val");
+	    	}).join("\r\n\tand ");
+	    	#end
+	    	
+	    	#if("$op"=="select")
+	    		
+		    	var sql = "select \r\n\t" + $.map($(".field"), function(o){ 
+		    		if(o.checked)
+		    			return $(o).val();
+		    	}).join(", ") + "\r\nfrom \r\n\t$!{table.code}\r\n"+((where=="")?"":("where\r\n\t"+where));
+		    	
+			#elseif("$op"=="delete")
+				
+				var sql = "delete from \r\n$!{table.code}\r\n"+((where=="")?"":("where\r\n\t"+where));
+				
+			#elseif("$op"=="insert")
+			
+				var fields_k = $.map($(".fieldValue"), function(o1){
+					var o = $(o1);
+					if(o.val()!="")
+						return o.attr("field");
+				}).join(",\r\n\t");	
+				var fields_v = $.map($(".fieldValue"), function(o1){
+					var o = $(o1);
+					if(o.val()!="")
+						return getValue(o.attr("id"));
+				}).join(",\r\n\t");	
+				var sql = (fields_k=="")?"":("insert into $!{table.code}(\r\n\t"+fields_k+"\r\n) values (\r\n\t"+fields_v+")");
+				
+			#elseif("$op"=="update")
+			
+				var setv = $.map($(".fieldValue"), function(o1){
+					var o = $(o1);
+					if(o.val()!="")
+						return o.attr("field")+"="+getValue(o.attr("id"));
+				}).join(",\r\n\t");			
+				var sql = (setv=="")?"":("update $!{table.code} set "+setv);
+				
+			#end
+	    	editor.setValue(sql);
+	    	editor.clearSelection();
+	    } 
+	    
+	    $(".selectall, .field, .op, .fieldValue").change(function(){
+	    	sqlBuild();
+	    });
+	});
+</script>

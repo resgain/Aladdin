@@ -1,0 +1,108 @@
+<ttop>
+	#set($template=true)
+</ttop>
+
+<bean name="breadcrumb" type="creatCrumb" index="999999">
+	模版管理
+</bean>
+
+<table class="table table-bordered table-hover">
+	<thead>
+	<tr>
+		<th>模板名称</th>
+		<th width="200">模板文件类型</th>
+		<th width="200">生成文件名</th>
+		<th width="150">创建时间</th>
+		<th width="100">操作</th>
+	</tr>
+	</thead>
+	<tbody>
+	#foreach($tpa in $pt.getTemplateList())
+	<tr>
+		<td>$!{tpa.name}</td>
+		<td>$!{tpa.type}</td>
+		<td>$!{tpa.fileName}</td>
+		<td>$!vt.fdt($!{tpa.cdate})</td>
+		<td> 
+			<a href="#" class="modify" id="${tpa.id}">
+				<i class="icon-edit"></i>修改
+			</a> 
+			<a href="template!del.do?id=$!{tpa.id}" class="ajax" confirm="您确认删除吗?">
+				<i class="icon-trash"></i>删除
+			</a>
+		</td>
+	</tr>	
+	#end
+	</tbody>	
+</table>
+<div style="text-align: right;">
+	<a class="btn btn-primary modify" href="#">新建模版</a>
+</div>
+
+<div class="modal hide" id="templateModal">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">X</button>
+		<h3>模板基本信息</h3>
+	</div>
+	<form id="template_edit_form" class="form-horizontal" method="POST" action="template_edit.rhtml">
+	<input id="tpa_id" type="hidden" name="id" value=""/>
+	<div class="modal-body">
+			<div class="control-group">
+				<label class="control-label">模板名称</label>
+				<div class="controls">
+					<input type="text"  id="tpa_name" class="input-xlarge" name="name" require="true" placeholder="模板名称" msg="请输入模板名称"/>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">模板文件类型</label>
+				<div class="controls">
+					<select id="tpa_type" name="type"  class="input-xlarge" require="true" msg="请选择模板文件类型"></select>
+				</div>
+			</div>	
+			<div class="control-group">
+				<label class="control-label">生成的文件名</label>
+				<div class="controls">
+					<input type="text"  id="tpa_file" class="input-xlarge" name="fileName" require="true" placeholder="生成的文件名" msg="请输入要生成的目标文件名。"/>
+				</div>
+			</div>				
+	</div>
+		<div class="modal-footer">
+			<table width="100%">
+				<tr>
+					<td width="50%" align="center">
+					<input type="submit" class="btn btn-primary" onClick="return formValidation($('#template_edit_form'));" value="下一步" /> 
+					<a href="#" class="btn" data-dismiss="modal">取消</a>
+					</td>
+				</tr>
+			</table>
+			</div>
+	</form>
+</div>
+
+<script>
+	#set($deffile="table:class")
+	$(document).ready(function(){
+		var tc = $("#tpa_type");
+		tc.append("<option value=''>请选择模板文件类型</option>");
+		$.each(TPL_FILE_IFNO, function(t){
+			tc.append("<option>"+t+"</option>");
+		});
+		tc.change(function(){
+			$("#tpa_file").val("${$!{deffile}}"+TPL_FILE_IFNO[tc.val()].ext);
+		});
+		
+		$(".modify").click(function(e){
+			var to = $(this);
+			$("#template_edit_form")[0].reset();
+			if(to.attr("id")){
+				var tds = to.parents("tr").find("td");
+				$("#tpa_id").val(to.attr("id"));
+				$("#tpa_name").val(tds[0].textContent);
+				$("#tpa_type").val(tds[1].textContent);
+				$("#tpa_file").val(tds[2].textContent);
+			}
+			$("#templateModal").modal();
+			return false;
+		});
+	});
+</script>

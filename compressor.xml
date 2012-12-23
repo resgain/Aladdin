@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<project basedir="./web" default="compress">
+
+	<property name="src.dir" value="${basedir}/js" />
+
+	<property name="outfile" value="${src.dir}/resgain1.js" />
+
+	<target name="compress" depends="">
+		<concat destfile="${outfile}" force="no" fixlastline="true" encoding="UTF-8">
+			<filelist dir="${basedir}/js/" files="jquery.js, bootstrap.js, aladdin.js, aladdin_data.js"/>
+		</concat>
+		<gzip src="${outfile}" zipfile="${src.dir}/resgain.jsz" />
+		<delete file="${outfile}" />
+	</target>
+
+</project>

@@ -1,0 +1,43 @@
+<ttop>
+	#set($index=true)
+	#set($tpa=${pt.getTemplate($tpaId)})
+</ttop>
+
+<bean name="breadcrumb" type="addCrumb" index="999999">
+	生成程序-模板编辑
+</bean>
+<style>
+.ace_editor_wrapper {
+    border: 1px solid #DDDDDD;
+    border-radius: 4px 4px 0 4px;
+    height: 480px;
+    margin-top: 5px;
+    position: relative;
+}
+</style>
+<script type="text/javascript" src="/js/dragsort.js"></script>
+<script src="/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+
+<form class="form-horizontal" action="/project!build.do" method="post">
+<input type="hidden" name="id" value="$!{projId}"/>
+<input type="hidden" name="tabIds" value="$!{tabIds}"/>
+<input type="hidden" id="tpa_content" name="tpa.content" value=""/>
+<input type="hidden" id="tpa_content" name="tpa.fileName" value="$!{tpa.fileName}"/>
+<div id="editor" class="ace_editor_wrapper">$!{tpa.content}</div>
+<div class="form-actions" style="text-align: center;">
+	<button type="submit" class="btn btn-primary submit">生成</button>
+	<a href="template.rhtml" class="btn">取消</a>
+</div>	
+</form>
+<script>
+	$(document).ready(function(){
+		var editor = getAceEdit("editor", TPL_FILE_IFNO["$pt.getTemplate($tpaId).type"].model);
+	    
+	    $(".submit").click(function(e){
+	    	$("#tpa_content").val(editor.getValue());
+	    	return true;
+	    })
+	});
+</script>
+
+

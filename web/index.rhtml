@@ -1,0 +1,65 @@
+<ttop>
+	#set($index=true)
+</ttop>
+
+<bean name="breadcrumb" type="creatCrumb" index="999999">
+	项目列表
+</bean>
+
+<table class="table table-bordered table-hover">
+	<thead>
+		<tr>
+			<th width="240">项目名称</th>
+			<th width="120">创建时间</th>
+			<th>模块</th>
+			<th width="40">操作</th>
+		</tr>
+	</thead>
+	#foreach($proj in $pt.getProjectList())
+	<tr>
+		<td><a href="/table.rhtml?projId=$!{proj.id}">$!{proj.name}</a></td>
+		<td>$vt.fdt($!{proj.cdate})</td>
+		<td>
+			#foreach($cate in $proj.project.categoryList)
+				<a href="/table.rhtml?projId=$!{proj.id}&cate=$!{cate.id}" style="padding-left: 10px;">$cate.name</a>
+			#end
+		</td>
+		<td><a href="project!del.do?id=$!{proj.id}" class="ajax" confirm="您确认删除吗?">删除</a></td>
+	</tr>	
+	#end
+</table>
+
+<div style="text-align: right;">
+	<a class="btn btn-primary" data-toggle="modal" href="#projectModal" data-dismiss="modal">新建项目</a>
+</div>
+
+<div class="modal hide" id="projectModal">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">X</button>
+		<h3>新建项目</h3>
+	</div>
+	<form class="form-horizontal ajaxform" enctype="application/x-www-form-urlencoded" method="POST" action="project!add.do" tu="${action}">
+	<div class="modal-body">
+			<div class="control-group">
+				<label class="control-label">项目名称</label>
+				<div class="controls">
+					<input type="text" class="input-xlarge" name="name" require="true" placeholder="项目名称"/>
+				</div>
+			</div>	
+			<div class="control-group">
+				<label class="control-label">PDM文件</label>
+				<div class="controls">
+					<input type="file" class="input-xlarge" name="myFile" require="true" placeholder="PDM文件"/>
+				</div>
+			</div>	
+	</div>
+		<div class="modal-footer">
+			<table width="100%">
+				<tr>
+					<td width="50%" align="center"><input type="submit" class="btn btn-primary" value="确认" /> 
+					<a href="#" class="btn" data-dismiss="modal">取消</a></td>
+				</tr>
+			</table>
+			</div>
+	</form>
+</div>

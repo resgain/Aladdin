@@ -1,0 +1,29 @@
+<ttop>
+	#set($index=true)
+	#set($table=$pt.getProject($projId).project.getTable($tableId))
+</ttop>
+
+<bean name="breadcrumb" type="addCrumb" index="999999">
+	#set($table=$pt.getProject($projId).project.getTable($tableId))
+	$!{table.code}($!{table.name})
+</bean>
+<table class="table table-bordered table-hover">	
+	<thead>
+		<tr>
+			<th width="210">Code</th>
+			<th width="210">Name</th>
+			<th width="180">类型</th>
+			<th>说明</th>
+		</tr>
+	</thead>
+	<tbody>
+	#foreach($column in $table.columns)
+		<tr>
+			<td>$!{column.code}</td>
+			<td>$!{column.name}</td>
+			<td>$!{column.type}</td>
+			<td>$!{column.comment}</td>
+		</tr>
+	#end
+	</tbody>
+</table>

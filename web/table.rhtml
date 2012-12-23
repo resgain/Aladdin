@@ -1,0 +1,118 @@
+<ttop>
+	#set($index=true)
+	#if($cate)
+		#set($tableList=$pt.getProject($projId).project.getCategory($cate).tableList)
+	#else
+		#set($tableList=$pt.getProject($projId).project.tableList)
+	#end	
+</ttop>
+
+<bean name="breadcrumb" type="addCrumb" index="999999">
+	#if($cate)
+		【$!{pt.getProject($projId).project.getCategory($cate).name}】表列表
+	#else
+		全部表列表
+	#end
+</bean>
+
+<form action="project!template.do">
+<input type="hidden" name="projId" value="$!{projId}"/>
+<table class="table table-bordered table-hover">
+	<thead>
+		<tr>
+		    <th width="15"><input type="checkbox" class="selectall" sub="tabIds"></th>
+			<th width="240">Code</th>
+			<th width="240">Name</th>
+			<th>说明</th>
+			<th width="120"></th>
+		</tr>
+	</thead>
+	#foreach($table in $tableList)
+	<tr>
+	    <td><input type="checkbox" name="tabIds" class="tabIds" value="$!{table.id}"></td>
+		<td><a href="/column.rhtml?projId=$!{projId}&cate=$!{cate}&tableId=$!{table.id}">$!{table.code}</a></td>
+		<td><a href="/column.rhtml?projId=$!{projId}&cate=$!{cate}&tableId=$!{table.id}">$!{table.name}</a></td>
+		<td>$!{table.comment}</td>
+		<td>
+			<div class="btn-group">
+				<a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">SQL Builder <span class="caret"></span></a>
+				<ul class="dropdown-menu">
+					<li><a href="/sql_build.rhtml?projId=$!{projId}&cate=$!{cate}&tableId=$!{table.id}&op=select">Select</a></li>
+					<li><a href="/sql_build.rhtml?projId=$!{projId}&cate=$!{cate}&tableId=$!{table.id}&op=insert">Insert</a></li>
+					<li><a href="/sql_build.rhtml?projId=$!{projId}&cate=$!{cate}&tableId=$!{table.id}&op=update">Update</a></li>
+					<li><a href="/sql_build.rhtml?projId=$!{projId}&cate=$!{cate}&tableId=$!{table.id}&op=delete">Delete</a></li>
+				</ul>
+			</div>
+		</td>
+	</tr>	
+	#end
+</table>
+
+<div style="text-align: center; padding: 1px 1px 10px 1px;">
+	#if($tableList.size()>0)
+		<input id="_next" type="submit" class="btn btn-primary" style="width: 100px;" value="下一步" />
+	#else
+		<div class="alert">没有表信息</div>
+	#end
+</div>
+</form>
+
+<div class="modal hide" id="templateSelectModal">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">X</button>
+		<h3>选择模板</h3>
+	</div>
+	<form id="template_select_form" class="form-horizontal" method="POST" action="/build_edit.rhtml">
+	<input type="hidden" name="projId" value="$!{projId}"/>
+	<input id="tabIds_" type="hidden" name="tabIds" value=""/>
+	#set($tpaList=$pt.getTemplateList())
+	#if(!$tpaList || $tpaList.isEmpty())
+		<div class="alert alert-info">对不起，您还没有建立生成模板，请先在模板管理里建立模板。</div>
+	#else
+	<div class="modal-body">
+			<div class="control-group">
+				<label class="control-label">模板名称</label>
+				<div class="controls">
+					<select name="tpaId" class="input-xlarge" require="true" msg="请选择模板文件类型">
+						#foreach($tpa in $tpaList)
+							<option value="$!{tpa.id}">$!{tpa.name}($!{tpa.type})</option>
+						#end
+					</select>
+				</div>
+			</div>			
+	</div>
+	<div class="modal-footer">
+		<table width="100%">
+			<tr>
+				<td width="50%" align="center">
+				<input type="submit" class="btn btn-primary" onClick="return formValidation($('#template_edit_form'));" value="下一步" /> 
+				<a href="#" class="btn" data-dismiss="modal">取消</a>
+				</td>
+			</tr>
+		</table>
+	</div>
+	#end
+	</form>
+</div>
+
+<script>
+$(function() {
+    
+    $("#_next").click(function(){
+    	var tabIds = "";
+    	var fs = document.getElementsByName("tabIds");
+    	for(j=0, jmax=fs.length; j < jmax; j++) {
+    		if(fs[j].checked)
+    			tabIds+=fs[j].value+",";
+        }
+    	if(tabIds.length<1)
+    	{
+    		alert_("至少选择一个表吧，不然您要做什么啊");
+    		return false;
+    	}
+    	$("#tabIds_").val(tabIds);
+    	$("#templateSelectModal").modal();
+    	return false;
+    });
+});
+</script>

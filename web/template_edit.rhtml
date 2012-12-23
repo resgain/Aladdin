@@ -1,0 +1,117 @@
+<ttop>
+	#set($template=true)
+</ttop>
+
+<bean name="breadcrumb" type="addCrumb" index="999999">
+	$!{name}($!{type})
+</bean>
+<style>
+.ace_editor_wrapper {
+    border: 1px solid #DDDDDD;
+    border-radius: 4px 4px 0 4px;
+    height: 490px;
+    margin-top: 5px;
+    position: relative;
+}
+.table th, .table td {
+	padding: 3px;
+}
+</style>
+<script type="text/javascript" src="/js/dragsort.js"></script>
+<script src="/js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+<div class="container-fluid">
+<div class="row-fluid">
+	<div class="span9">
+		<form class="form-horizontal ajaxform" action="/template!save.do" method="post" tu="/template.rhtml">
+		<input type="hidden" name="tpa.id" value="$!{id}"/>
+		<input type="hidden" name="tpa.name" value="$!{name}"/>
+		<input type="hidden" name="tpa.fileName" value="$!{fileName}"/>
+		<input type="hidden" name="tpa.type" value="$!{type}"/>
+		<input type="hidden" id="tpa_content" name="tpa.content" value=""/>
+		<div id="editor" class="ace_editor_wrapper">$!{pt.getTemplate($id).content}</div>
+		<div class="form-actions" style="text-align: center;">
+			<button type="submit" class="btn btn-primary submit">保存</button>
+			<a href="template.rhtml" class="btn">取消</a>
+		</div>	
+		</form>
+	</div>
+	<div class="span3">
+		<h4>模板可用变量说明</h4>
+		<table class="table table-bordered">
+			<tbody>
+				<tr>
+					<td width="80" rowspan="5"><a href="#" class="tpavar">${project}</a></td>
+					<td colspan="2">项目信息</td>
+				</tr>
+				<tr>
+					<td width="100"><a href="#" class="tpavar">${project.code}</a></td>
+					<td>代码</td>
+				</tr>				
+				<tr>
+					<td><a href="#" class="tpavar">${project.name}</a></td>
+					<td>名称</td>
+				</tr>	
+				<tr>
+					<td><a href="#" class="tpavar">${project.author}</a></td>
+					<td>作者</td>
+				</tr>
+				<tr>
+					<td><a href="#" class="tpavar">${project.version}</a></td>
+					<td>版本</td>
+				</tr>
+				<tr>
+					<td rowspan="3"><a href="#" class="tpavar">${table}</a></td>
+					<td colspan="2">表信息</td>
+				</tr>
+				<tr>
+					<td><a href="#" class="tpavar">${table.code}</a></td>
+					<td>代码</td>
+				</tr>				
+				<tr>
+					<td><a href="#" class="tpavar">${table.name}</a></td>
+					<td>名称</td>
+				</tr>	
+				<tr>
+					<td rowspan="4"><a href="#" class="tpavar">${columns}</a></td>
+					<td colspan="2">表字段信息--列表(下面的t为变量)</td>
+				</tr>
+				<tr>
+					<td><a href="#" class="tpavar">${t.code}</a></td>
+					<td>代码</td>
+				</tr>				
+				<tr>
+					<td><a href="#" class="tpavar">${t.name}</a></td>
+					<td>字段名称</td>
+				</tr>																									
+				<tr>
+					<td><a href="#" class="tpavar">${t.type}</a></td>
+					<td>类型及长度</td>
+				</tr>
+				<tr>
+					<td colspan="3">
+						此外还有table或column的class、prop、type等属性以及自定义的属性。
+						占位符为以:开头的属性，如:#set($et="table:class")<a href="#" class="tpavar">${$!{et}}</a>				
+					</td>
+				</tr>												
+			</tbody>
+		</table>
+	</div>
+</div>
+<script>
+	$(document).ready(function(){
+		
+		var editor = getAceEdit("editor", TPL_FILE_IFNO["${type}"].model);
+
+		$(".submit").click(function(e){
+	    	$("#tpa_content").val(editor.getValue());
+	    	return true;
+	    })
+	    
+	    $(".tpavar").click(function(e){
+	    	var ao = $(this);
+	    	editor.insert(ao.text());
+	    });
+	});
+</script>
+
+
