@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.7.0_04"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/PDMParser"/>
 	<classpathentry kind="lib" path="lib/bonecp-0.7.1.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/cglib-nodep-2.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-fileupload-1.2.jar"/>
@@ -28,5 +27,6 @@
 	<classpathentry kind="lib" path="lib/sparrow.jar"/>
 	<classpathentry kind="lib" path="lib/velocity-1.7-dep.jar"/>
 	<classpathentry kind="lib" path="lib/servlet-api-2.5.jar"/>
+	<classpathentry kind="lib" path="lib/sparrow_pdm.jar"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>
