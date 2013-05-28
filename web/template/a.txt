@@ -1,0 +1,11 @@
+function maxLength(obj)
+{
+    if(obj.type.toLowerCase()=="int")
+        return ", maxLength=8";
+    else if(obj.type.toLowerCase()=="bigint")
+        return ", maxLength=15"
+    else if(obj.length>0)
+        return ", maxLength="+(obj.length+obj.precision);
+    return "";
+}
+
