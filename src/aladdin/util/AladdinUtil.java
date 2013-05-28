@@ -1,6 +1,7 @@
 package aladdin.util;
 
 import java.io.StringWriter;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 import org.resgain.embeddb.Db4oServiceFactory;
 import org.resgain.renderer.bean.VelocitySLF4JLog;
+import org.resgain.util.ViewTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,7 +100,10 @@ public class AladdinUtil
         if(context==null)
             return content;
         StringWriter sw = new StringWriter();
-        ve.evaluate(new VelocityContext(context), sw, "LOG", content);
+        VelocityContext vc= new VelocityContext(context);
+        vc.put("vt", ViewTools.getInstance());
+        vc.put("today", new Date());
+        ve.evaluate(vc, sw, "LOG", content);
         return sw.toString();
     }	
 	
@@ -138,18 +143,26 @@ public class AladdinUtil
 	private static String getBeanPropType(Column column)
 	{
         String jtype=column.getType().toLowerCase();
-        if(jtype.indexOf("char")>=0 || jtype.indexOf("clob")>=0 || jtype.indexOf("text")>=0)
+        if(jtype.indexOf("char")>=0 || jtype.equals("clob") || jtype.equals("text"))
         	jtype="String";
         else if(jtype.indexOf("date")>=0)
         	jtype="Date";
-        else if(jtype.indexOf("money")>=0 || jtype.indexOf("double")>=0 || jtype.indexOf("float")>=0)
+        else if(jtype.equals("money") || jtype.equals("double") || jtype.equals("float"))
         	jtype="double";
-        else if(jtype.indexOf("image")>=0 || jtype.indexOf("blob")>=0)
+        else if(jtype.equals("image") || jtype.equals("blob"))
         	jtype="byte[]";
+        else if("int".equals(jtype) || "integer".equals(jtype))
+        	jtype = "int"; 
+        else if("bigint".equals(jtype) || "integer".equals(jtype) || (jtype.indexOf("number")>=0 && column.getPrecision()==0))
+        	jtype = "long";  
+        else if(jtype.indexOf("number")>=0 && column.getPrecision()>0)
+        	jtype = "double";
         else
-        	jtype = "long";   
+        	jtype = "String";
+        
         if(column.getDomain()!=null && column.getDomain().getCode().toLowerCase().indexOf("boolean")>=0)
         	jtype = "Boolean";
+
         return jtype;
 	}
 

@@ -2,6 +2,7 @@ package aladdin.action;
 
 import org.resgain.plugin.simple.bean.ActionResult;
 import org.resgain.util.StringTools;
+
 import aladdin.entity.Attribute;
 
 public class AttributeAction extends AbstractAction

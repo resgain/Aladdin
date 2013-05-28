@@ -27,6 +27,7 @@
 	<classpathentry kind="lib" path="lib/sparrow.jar"/>
 	<classpathentry kind="lib" path="lib/velocity-1.7-dep.jar"/>
 	<classpathentry kind="lib" path="lib/servlet-api-2.5.jar"/>
-	<classpathentry kind="lib" path="lib/sparrow_pdm.jar"/>
+	<classpathentry kind="lib" path="lib/jsoup-1.6.3.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/PDMParser"/>
 	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>

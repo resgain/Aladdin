@@ -23,7 +23,7 @@ final public class AladdinDbConfig extends AbstractDbConfig
 	public void init(CommonConfiguration config)
 	{
 		config.exceptionsOnNotStorable(true);        
-		config.updateDepth(10);
-		config.activationDepth(10);
+		config.updateDepth(1000);
+		config.activationDepth(1000);
 	}	
 }
